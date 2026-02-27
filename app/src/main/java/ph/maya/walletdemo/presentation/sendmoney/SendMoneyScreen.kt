@@ -7,8 +7,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -32,6 +36,7 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun SendMoneyRoute(
     onLoggedOut: () -> Unit,
+    onNavigateBack: () -> Unit,
     viewModel: SendMoneyViewModel
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -53,7 +58,8 @@ fun SendMoneyRoute(
         onDismissSheet = { sheetData = null },
         onAmountChange = viewModel::onAmountChange,
         onSubmit = viewModel::onSubmit,
-        onLogout = viewModel::onLogoutClick
+        onLogout = viewModel::onLogoutClick,
+        onNavigateBack = onNavigateBack
     )
 }
 
@@ -65,12 +71,21 @@ fun SendMoneyScreen(
     onDismissSheet: () -> Unit,
     onAmountChange: (String) -> Unit,
     onSubmit: () -> Unit,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onNavigateBack: () -> Unit
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Send Money") },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) { // <-- Use the new parameter here
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
                 actions = {
                     TextButton(onClick = onLogout) { Text("Logout") }
                 }
@@ -143,7 +158,8 @@ private fun SendMoneyScreenPreview_Default() {
         onDismissSheet = {},
         onAmountChange = {},
         onSubmit = {},
-        onLogout = {}
+        onLogout = {},
+        onNavigateBack = {}
     )
 }
 
@@ -159,7 +175,8 @@ private fun SendMoneyScreenPreview_Submitting() {
         onDismissSheet = {},
         onAmountChange = {},
         onSubmit = {},
-        onLogout = {}
+        onLogout = {},
+        onNavigateBack = {}
     )
 }
 
@@ -178,7 +195,8 @@ private fun SendMoneyScreenPreview_SuccessSheet() {
         onDismissSheet = {},
         onAmountChange = {},
         onSubmit = {},
-        onLogout = {}
+        onLogout = {},
+        onNavigateBack = {}
     )
 }
 
@@ -197,6 +215,7 @@ private fun SendMoneyScreenPreview_FailureSheet() {
         onDismissSheet = {},
         onAmountChange = {},
         onSubmit = {},
-        onLogout = {}
+        onLogout = {},
+        onNavigateBack = {}
     )
 }
