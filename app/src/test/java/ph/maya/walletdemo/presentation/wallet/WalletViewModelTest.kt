@@ -39,4 +39,20 @@ class WalletViewModelTest {
         assertEquals(true, state.isBalanceVisible)
         assertEquals(null, state.errorMessage)
     }
+
+    @Test
+    fun `toggle visibility flips isBalanceVisible`() = runTest(mainDispatcherRule.dispatcher) {
+        val viewModel = WalletViewModel(
+            getWalletBalanceUseCase = GetWalletBalanceUseCase(walletRepository)
+        )
+
+        advanceUntilIdle()
+
+        val before = viewModel.state.value.isBalanceVisible
+
+        viewModel.onToggleBalanceVisibility()
+
+        val after = viewModel.state.value.isBalanceVisible
+        assertEquals(!before, after)
+    }
 }
