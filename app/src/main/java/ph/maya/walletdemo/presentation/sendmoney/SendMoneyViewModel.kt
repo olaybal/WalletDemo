@@ -53,7 +53,7 @@ class SendMoneyViewModel @Inject constructor(
                     eventsInternal.emit(SendMoneyEvent.ShowResultSheet(false, result.message))
             }
 
-            stateInternal.value = stateInternal.value.copy(isSubmitting = false)
+            stateInternal.value = stateInternal.value.copy(isSubmitting = false, amountText = "")
         }
     }
 

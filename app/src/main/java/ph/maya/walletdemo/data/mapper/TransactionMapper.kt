@@ -9,6 +9,7 @@ fun TransactionDto.toDomain(): Transaction? {
     return Transaction(
         id = id ?: "",
         amount = safeAmount,
-        currency = safeCurrency
+        currency = safeCurrency,
+        createdAt = createdAt
     )
 }
