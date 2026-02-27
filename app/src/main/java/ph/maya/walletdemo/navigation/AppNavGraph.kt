@@ -42,6 +42,7 @@ fun AppNavGraph(
         }
         composable(Destinations.SEND_MONEY) {
             SendMoneyRoute(
+                viewModel = hiltViewModel(it),
                 onLoggedOut = {
                     navController.navigate(Destinations.LOGIN) {
                         popUpTo(0) { inclusive = true }
