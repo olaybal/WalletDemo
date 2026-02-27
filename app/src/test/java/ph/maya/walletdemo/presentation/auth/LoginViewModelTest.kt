@@ -10,7 +10,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
-import ph.maya.walletdemo.MainDispatcherRule
+import ph.maya.walletdemo.core.MainDispatcherRule
 import ph.maya.walletdemo.domain.model.Session
 import ph.maya.walletdemo.domain.model.User
 import ph.maya.walletdemo.domain.repository.SessionRepository

@@ -1,4 +1,4 @@
-package ph.maya.walletdemo
+package ph.maya.walletdemo.core
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

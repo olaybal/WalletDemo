@@ -8,7 +8,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
-import ph.maya.walletdemo.MainDispatcherRule
+import ph.maya.walletdemo.core.MainDispatcherRule
 import ph.maya.walletdemo.domain.model.Transaction
 import ph.maya.walletdemo.domain.model.WalletBalance
 import ph.maya.walletdemo.domain.repository.WalletRepository
