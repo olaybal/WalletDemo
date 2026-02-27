@@ -11,6 +11,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import ph.maya.walletdemo.MainDispatcherRule
+import ph.maya.walletdemo.domain.model.Transaction
 import ph.maya.walletdemo.domain.model.WalletBalance
 import ph.maya.walletdemo.domain.repository.WalletRepository
 import ph.maya.walletdemo.domain.usecase.auth.LogoutUseCase
@@ -26,6 +27,14 @@ class WalletViewModelTest {
     private val walletRepository = object : WalletRepository {
         override suspend fun getBalance(): WalletBalance {
             return WalletBalance(amount = 500.0, currency = "PHP")
+        }
+
+        override suspend fun sendMoney(amount: Double): Result<Unit> {
+            TODO("Not yet implemented")
+        }
+
+        override suspend fun getTransactions(): List<Transaction> {
+            TODO("Not yet implemented")
         }
     }
 

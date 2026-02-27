@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.retrofit)
     implementation(libs.converter.moshi)
+    implementation(libs.moshi.kotlin)
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
