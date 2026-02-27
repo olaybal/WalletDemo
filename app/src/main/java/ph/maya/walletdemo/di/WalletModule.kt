@@ -6,7 +6,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import ph.maya.walletdemo.data.repository.InMemoryWalletRepositoryImpl
 import ph.maya.walletdemo.domain.repository.WalletRepository
+import ph.maya.walletdemo.domain.usecase.wallet.GetTransactionsUseCase
 import ph.maya.walletdemo.domain.usecase.wallet.GetWalletBalanceUseCase
+import ph.maya.walletdemo.domain.usecase.wallet.SendMoneyUseCase
 import javax.inject.Singleton
 
 @Module
@@ -21,4 +23,12 @@ object WalletModule {
     fun provideGetWalletBalanceUseCase(
         walletRepository: WalletRepository
     ): GetWalletBalanceUseCase = GetWalletBalanceUseCase(walletRepository)
+
+    @Provides
+    fun provideSendMoneyUseCase(walletRepository: WalletRepository): SendMoneyUseCase =
+        SendMoneyUseCase(walletRepository)
+
+    @Provides
+    fun provideGetTransactionsUseCase(walletRepository: WalletRepository): GetTransactionsUseCase =
+        GetTransactionsUseCase(walletRepository)
 }
