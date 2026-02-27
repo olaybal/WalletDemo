@@ -9,14 +9,26 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun TransactionsRoute(
+    viewModel: TransactionsViewModel,
     onLoggedOut: () -> Unit
 ) {
-    TransactionsScreen(onLogout = onLoggedOut)
+
+    LaunchedEffect(Unit) {
+        viewModel.events.collectLatest { event ->
+            when (event) {
+                TransactionsEvent.LoggedOut -> onLoggedOut()
+            }
+        }
+    }
+
+    TransactionsScreen(onLogout = viewModel::onLogoutClick)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

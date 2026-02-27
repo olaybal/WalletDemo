@@ -53,6 +53,7 @@ fun AppNavGraph(
 
         composable(Destinations.TRANSACTIONS) {
             TransactionsRoute(
+                viewModel = hiltViewModel(it),
                 onLoggedOut = {
                     navController.navigate(Destinations.TRANSACTIONS) {
                         popUpTo(0) { inclusive = true }
