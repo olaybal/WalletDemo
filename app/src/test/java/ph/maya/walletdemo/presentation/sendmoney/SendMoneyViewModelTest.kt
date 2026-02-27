@@ -9,12 +9,13 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import ph.maya.walletdemo.core.MainDispatcherRule
+import ph.maya.walletdemo.domain.model.Session
 import ph.maya.walletdemo.domain.model.Transaction
 import ph.maya.walletdemo.domain.model.WalletBalance
+import ph.maya.walletdemo.domain.repository.SessionRepository
 import ph.maya.walletdemo.domain.repository.WalletRepository
 import ph.maya.walletdemo.domain.usecase.auth.LogoutUseCase
 import ph.maya.walletdemo.domain.usecase.wallet.SendMoneyUseCase
-import ph.maya.walletdemo.fakes.FakeSessionRepository
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SendMoneyViewModelTest {
@@ -22,15 +23,30 @@ class SendMoneyViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
+    private class FakeSessionRepository : SessionRepository {
+        var didLogout = false
+
+        override suspend fun login(
+            username: String,
+            password: String
+        ): Result<Session> {
+            return Result.failure(IllegalStateException("Not needed"))
+        }
+
+        override suspend fun logout() {
+            didLogout = true
+        }
+
+        override suspend fun getSession(): Session? = null
+    }
+
     private class FakeWalletRepository(
         private var balance: Double = 500.0
     ) : WalletRepository {
 
         var lastSendAmount: Double? = null
-        private val transactions = mutableListOf<Transaction>()
 
-        override suspend fun getBalance(): WalletBalance =
-            WalletBalance(amount = balance, currency = "PHP")
+        override suspend fun getBalance(): WalletBalance = WalletBalance(balance, "PHP")
 
         override suspend fun sendMoney(amount: Double): Result<Unit> {
             lastSendAmount = amount
@@ -38,18 +54,16 @@ class SendMoneyViewModelTest {
             if (amount > balance) return Result.failure(IllegalStateException("Insufficient balance"))
 
             balance -= amount
-            transactions.add(Transaction(amount = amount, currency = "PHP"))
             return Result.success(Unit)
         }
 
-        override suspend fun getTransactions(): List<Transaction> = transactions.toList()
+        override suspend fun getTransactions(): List<Transaction> = emptyList()
     }
 
     @Test
     fun `amount input keeps only digits and dot`() = runTest {
-        val walletRepo = FakeWalletRepository()
         val viewModel = SendMoneyViewModel(
-            sendMoneyUseCase = SendMoneyUseCase(walletRepo),
+            sendMoneyUseCase = SendMoneyUseCase(FakeWalletRepository()),
             logoutUseCase = LogoutUseCase(FakeSessionRepository())
         )
 
@@ -58,46 +72,46 @@ class SendMoneyViewModelTest {
     }
 
     @Test
-    fun `submit emits failure sheet when amount is invalid`() = runTest {
-        val walletRepo = FakeWalletRepository()
-        val viewModel = SendMoneyViewModel(
-            sendMoneyUseCase = SendMoneyUseCase(walletRepo),
-            logoutUseCase = LogoutUseCase(FakeSessionRepository())
-        )
+    fun `submit emits failure sheet when amount is invalid`() =
+        runTest {
+            val viewModel = SendMoneyViewModel(
+                sendMoneyUseCase = SendMoneyUseCase(FakeWalletRepository()),
+                logoutUseCase = LogoutUseCase(FakeSessionRepository())
+            )
 
-        viewModel.onAmountChange("..") // becomes ".." after filter, toDoubleOrNull = null
-        viewModel.onSubmit()
+            viewModel.onAmountChange("..")
+            viewModel.onSubmit()
 
-        val event = withTimeout(1_000) { viewModel.events.first() }
-        assertEquals(
-            SendMoneyEvent.ShowResultSheet(isSuccess = false, message = "Enter a valid amount"),
-            event
-        )
-    }
+            val event = withTimeout(1_000) { viewModel.events.first() }
+            assertEquals(
+                SendMoneyEvent.ShowResultSheet(isSuccess = false, message = "Enter a valid amount"),
+                event
+            )
+        }
 
     @Test
-    fun `submit emits failure sheet when amount is greater than balance`() = runTest {
-        val walletRepo = FakeWalletRepository(balance = 500.0)
-        val viewModel = SendMoneyViewModel(
-            sendMoneyUseCase = SendMoneyUseCase(walletRepo),
-            logoutUseCase = LogoutUseCase(FakeSessionRepository())
-        )
+    fun `submit emits failure sheet when amount is greater than balance`() =
+        runTest {
+            val viewModel = SendMoneyViewModel(
+                sendMoneyUseCase = SendMoneyUseCase(FakeWalletRepository(balance = 500.0)),
+                logoutUseCase = LogoutUseCase(FakeSessionRepository())
+            )
 
-        viewModel.onAmountChange("600")
-        viewModel.onSubmit()
+            viewModel.onAmountChange("600")
+            viewModel.onSubmit()
 
-        val event = withTimeout(1_000) { viewModel.events.first() }
-        assertEquals(
-            SendMoneyEvent.ShowResultSheet(isSuccess = false, message = "Insufficient balance"),
-            event
-        )
-    }
+            val event = withTimeout(1_000) { viewModel.events.first() }
+            assertEquals(
+                SendMoneyEvent.ShowResultSheet(isSuccess = false, message = "Insufficient balance"),
+                event
+            )
+        }
 
     @Test
     fun `submit emits success sheet and calls repository when amount is within balance`() =
         runTest {
-
             val walletRepo = FakeWalletRepository(balance = 500.0)
+
             val viewModel = SendMoneyViewModel(
                 sendMoneyUseCase = SendMoneyUseCase(walletRepo),
                 logoutUseCase = LogoutUseCase(FakeSessionRepository())
@@ -115,19 +129,19 @@ class SendMoneyViewModelTest {
         }
 
     @Test
-    fun `logout emits LoggedOut and calls session logout`() = runTest {
-        val walletRepo = FakeWalletRepository()
-        val fakeSessionRepository = FakeSessionRepository()
+    fun `logout emits LoggedOut and calls session logout`() =
+        runTest {
+            val sessionRepo = FakeSessionRepository()
 
-        val viewModel = SendMoneyViewModel(
-            sendMoneyUseCase = SendMoneyUseCase(walletRepo),
-            logoutUseCase = LogoutUseCase(fakeSessionRepository)
-        )
+            val viewModel = SendMoneyViewModel(
+                sendMoneyUseCase = SendMoneyUseCase(FakeWalletRepository()),
+                logoutUseCase = LogoutUseCase(sessionRepo)
+            )
 
-        viewModel.onLogoutClick()
+            viewModel.onLogoutClick()
 
-        val event = withTimeout(1_000) { viewModel.events.first() }
-        assertEquals(SendMoneyEvent.LoggedOut, event)
-        assertTrue(fakeSessionRepository.didLogout)
-    }
+            val event = withTimeout(1_000) { viewModel.events.first() }
+            assertEquals(SendMoneyEvent.LoggedOut, event)
+            assertTrue(sessionRepo.didLogout)
+        }
 }
