@@ -55,7 +55,7 @@ fun AppNavGraph(
             TransactionsRoute(
                 viewModel = hiltViewModel(it),
                 onLoggedOut = {
-                    navController.navigate(Destinations.TRANSACTIONS) {
+                    navController.navigate(Destinations.LOGIN) {
                         popUpTo(0) { inclusive = true }
                     }
                 }
