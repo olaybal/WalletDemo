@@ -20,26 +20,42 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(
+fun LoginRoute(
     viewModel: LoginViewModel,
     onLoggedIn: () -> Unit
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-    val scrollState = rememberScrollState()
+    val state by viewModel.state.collectAsState()
 
     LaunchedEffect(state.isLoggedIn) {
         if (state.isLoggedIn) onLoggedIn()
     }
 
+    LoginScreen(
+        state = state,
+        onUsernameChange = viewModel::onUsernameChange,
+        onPasswordChange = viewModel::onPasswordChange,
+        onLoginClick = viewModel::onLoginClick
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LoginScreen(
+    state: LoginUiState,
+    onUsernameChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onLoginClick: () -> Unit
+) {
+    val scrollState = rememberScrollState()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -60,7 +76,7 @@ fun LoginScreen(
         ) {
             OutlinedTextField(
                 value = state.username,
-                onValueChange = viewModel::onUsernameChange,
+                onValueChange = onUsernameChange,
                 label = { Text("Username") },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -69,7 +85,7 @@ fun LoginScreen(
 
             OutlinedTextField(
                 value = state.password,
-                onValueChange = viewModel::onPasswordChange,
+                onValueChange = onPasswordChange,
                 label = { Text("Password") },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth()
@@ -78,7 +94,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = viewModel::onLoginClick,
+                onClick = onLoginClick,
                 enabled = !state.isLoading,
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -97,4 +113,55 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(24.dp))
         }
     }
+}
+
+@Preview(name = "Login - Default", showBackground = true)
+@Composable
+private fun LoginScreenPreview_Default() {
+    LoginScreen(
+        state = LoginUiState(
+            username = "",
+            password = "",
+            isLoading = false,
+            errorMessage = null,
+            isLoggedIn = false
+        ),
+        onUsernameChange = {},
+        onPasswordChange = {},
+        onLoginClick = {}
+    )
+}
+
+@Preview(name = "Login - With Error", showBackground = true)
+@Composable
+private fun LoginScreenPreview_Error() {
+    LoginScreen(
+        state = LoginUiState(
+            username = "jomar",
+            password = "pass",
+            isLoading = false,
+            errorMessage = "Invalid credentials",
+            isLoggedIn = false
+        ),
+        onUsernameChange = {},
+        onPasswordChange = {},
+        onLoginClick = {}
+    )
+}
+
+@Preview(name = "Login - Loading", showBackground = true)
+@Composable
+private fun LoginScreenPreview_Loading() {
+    LoginScreen(
+        state = LoginUiState(
+            username = "jomar",
+            password = "pass",
+            isLoading = true,
+            errorMessage = null,
+            isLoggedIn = false
+        ),
+        onUsernameChange = {},
+        onPasswordChange = {},
+        onLoginClick = {}
+    )
 }
