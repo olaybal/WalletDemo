@@ -1,10 +1,11 @@
 package ph.maya.walletdemo.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import ph.maya.walletdemo.presentation.auth.LoginRoute
+import ph.maya.walletdemo.presentation.auth.LoginScreen
 
 @Composable
 fun AppNavGraph(
@@ -14,7 +15,8 @@ fun AppNavGraph(
     NavHost(navController = navController, startDestination = startDestination) {
 
         composable(Destinations.LOGIN) {
-            LoginRoute(
+            LoginScreen(
+                viewModel = hiltViewModel(it),
                 onLoggedIn = {
                     navController.navigate(Destinations.WALLET) {
                         popUpTo(Destinations.LOGIN) { inclusive = true }
