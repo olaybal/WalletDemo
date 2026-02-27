@@ -11,12 +11,11 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import ph.maya.walletdemo.MainDispatcherRule
-import ph.maya.walletdemo.domain.model.Session
 import ph.maya.walletdemo.domain.model.WalletBalance
-import ph.maya.walletdemo.domain.repository.SessionRepository
 import ph.maya.walletdemo.domain.repository.WalletRepository
 import ph.maya.walletdemo.domain.usecase.auth.LogoutUseCase
 import ph.maya.walletdemo.domain.usecase.wallet.GetWalletBalanceUseCase
+import ph.maya.walletdemo.fakes.FakeSessionRepository
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WalletViewModelTest {
@@ -112,23 +111,6 @@ class WalletViewModelTest {
 
         val event = withTimeout(1_000) { viewModel.events.first() }
         assertEquals(WalletEvent.NavigateToTransactions, event)
-    }
-
-    private class FakeSessionRepository : SessionRepository {
-        var didLogout: Boolean = false
-
-        override suspend fun login(
-            username: String,
-            password: String
-        ): Result<Session> {
-            return Result.failure(IllegalStateException("Not needed in this test"))
-        }
-
-        override suspend fun logout() {
-            didLogout = true
-        }
-
-        override suspend fun getSession(): Session? = null
     }
 
 }
