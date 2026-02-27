@@ -41,4 +41,9 @@ class WalletViewModel @Inject constructor(
                 }
         }
     }
+
+    fun onToggleBalanceVisibility() {
+        val current = stateInternal.value
+        stateInternal.value = current.copy(isBalanceVisible = !current.isBalanceVisible)
+    }
 }
