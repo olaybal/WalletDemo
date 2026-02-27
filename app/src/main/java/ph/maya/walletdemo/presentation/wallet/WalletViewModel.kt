@@ -61,4 +61,16 @@ class WalletViewModel @Inject constructor(
             eventsInternal.emit(WalletEvent.LoggedOut)
         }
     }
+
+    fun onSendMoneyClick() {
+        viewModelScope.launch {
+            eventsInternal.emit(WalletEvent.NavigateToSendMoney)
+        }
+    }
+
+    fun onViewTransactionsClick() {
+        viewModelScope.launch {
+            eventsInternal.emit(WalletEvent.NavigateToTransactions)
+        }
+    }
 }

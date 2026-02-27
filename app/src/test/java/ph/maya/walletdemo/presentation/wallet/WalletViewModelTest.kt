@@ -84,6 +84,35 @@ class WalletViewModelTest {
         assertTrue(fakeSessionRepository.didLogout)
     }
 
+    @Test
+    fun `send money click emits NavigateToSendMoney`() = runTest {
+        val viewModel = WalletViewModel(
+            getWalletBalanceUseCase = GetWalletBalanceUseCase(walletRepository),
+            logoutUseCase = LogoutUseCase(FakeSessionRepository())
+        )
+
+        advanceUntilIdle()
+
+        viewModel.onSendMoneyClick()
+
+        val event = withTimeout(1_000) { viewModel.events.first() }
+        assertEquals(WalletEvent.NavigateToSendMoney, event)
+    }
+
+    @Test
+    fun `view transactions click emits NavigateToTransactions`() = runTest {
+        val viewModel = WalletViewModel(
+            getWalletBalanceUseCase = GetWalletBalanceUseCase(walletRepository),
+            logoutUseCase = LogoutUseCase(FakeSessionRepository())
+        )
+
+        advanceUntilIdle()
+
+        viewModel.onViewTransactionsClick()
+
+        val event = withTimeout(1_000) { viewModel.events.first() }
+        assertEquals(WalletEvent.NavigateToTransactions, event)
+    }
 
     private class FakeSessionRepository : SessionRepository {
         var didLogout: Boolean = false
