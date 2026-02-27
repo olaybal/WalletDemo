@@ -61,6 +61,9 @@ fun AppNavGraph(
                     navController.navigate(Destinations.LOGIN) {
                         popUpTo(0) { inclusive = true }
                     }
+                },
+                onNavigateBack = {
+                    navController.navigateUp()
                 }
             )
         }

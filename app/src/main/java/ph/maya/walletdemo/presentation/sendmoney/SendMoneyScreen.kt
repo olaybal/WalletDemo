@@ -79,7 +79,7 @@ fun SendMoneyScreen(
             TopAppBar(
                 title = { Text("Send Money") },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) { // <-- Use the new parameter here
+                    IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"

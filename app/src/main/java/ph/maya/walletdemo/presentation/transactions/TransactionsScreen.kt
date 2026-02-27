@@ -7,7 +7,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -28,6 +32,7 @@ import java.util.Locale
 @Composable
 fun TransactionsRoute(
     onLoggedOut: () -> Unit,
+    onNavigateBack: () -> Unit,
     viewModel: TransactionsViewModel
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -42,7 +47,8 @@ fun TransactionsRoute(
 
     TransactionsScreen(
         state = state,
-        onLogout = viewModel::onLogoutClick
+        onLogout = viewModel::onLogoutClick,
+        onNavigateBack = onNavigateBack
     )
 }
 
@@ -50,12 +56,21 @@ fun TransactionsRoute(
 @Composable
 fun TransactionsScreen(
     state: TransactionsUiState,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onNavigateBack: () -> Unit
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Transactions") },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
                 actions = { TextButton(onClick = onLogout) { Text("Logout") } }
             )
         }
@@ -104,7 +119,8 @@ private fun TransactionsScreenPreview_Empty() {
             items = emptyList(),
             errorMessage = null
         ),
-        onLogout = {}
+        onLogout = {},
+        onNavigateBack = {}
     )
 }
 
@@ -117,7 +133,8 @@ private fun TransactionsScreenPreview_Loading() {
             items = emptyList(),
             errorMessage = null
         ),
-        onLogout = {}
+        onLogout = {},
+        onNavigateBack = {}
     )
 }
 
@@ -130,7 +147,8 @@ private fun TransactionsScreenPreview_Error() {
             items = emptyList(),
             errorMessage = "Something went wrong"
         ),
-        onLogout = {}
+        onLogout = {},
+        onNavigateBack = {}
     )
 }
 
@@ -147,6 +165,7 @@ private fun TransactionsScreenPreview_List() {
             ),
             errorMessage = null
         ),
-        onLogout = {}
+        onLogout = {},
+        onNavigateBack = {}
     )
 }
