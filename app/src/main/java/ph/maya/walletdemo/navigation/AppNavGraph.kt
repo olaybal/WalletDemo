@@ -6,6 +6,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import ph.maya.walletdemo.presentation.auth.LoginScreen
+import ph.maya.walletdemo.presentation.sendmoney.SendMoneyRoute
+import ph.maya.walletdemo.presentation.transactions.TransactionsRoute
 import ph.maya.walletdemo.presentation.wallet.WalletRoute
 
 @Composable
@@ -33,6 +35,25 @@ fun AppNavGraph(
                 onNavigateToTransactions = { navController.navigate(Destinations.TRANSACTIONS) },
                 onLoggedOut = {
                     navController.navigate(Destinations.LOGIN) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable(Destinations.SEND_MONEY) {
+            SendMoneyRoute(
+                onLoggedOut = {
+                    navController.navigate(Destinations.LOGIN) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(Destinations.TRANSACTIONS) {
+            TransactionsRoute(
+                onLoggedOut = {
+                    navController.navigate(Destinations.TRANSACTIONS) {
                         popUpTo(0) { inclusive = true }
                     }
                 }
