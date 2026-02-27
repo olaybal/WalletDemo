@@ -25,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.collectLatest
 
@@ -33,7 +32,7 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun SendMoneyRoute(
     onLoggedOut: () -> Unit,
-    viewModel: SendMoneyViewModel = hiltViewModel()
+    viewModel: SendMoneyViewModel
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
